@@ -1,15 +1,11 @@
 package com.example.tr0
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.tr0.ui.GameViewModel
@@ -46,17 +42,20 @@ fun TR0App(
                 StartGameScreen(
                     onPlayButtonClicked = {
                         viewModel.resetGame()
-                        navController.navigate(GameScreen.Game.name)
+                        viewModel.getGameQuestions(navController)
                     },
+
                     modifier = Modifier
                         .padding(innerPadding)
                 )
             }
             composable(route = GameScreen.Game.name) {
                 PlayGameScreen(
+                    gameViewModel = viewModel,
                     onSaveAnswer = {
                         viewModel.addAnswer(it, navController)
                     },
+                    pregunta = uiState.token,
                     modifier = Modifier
                         .padding(innerPadding)
                 )
@@ -67,10 +66,6 @@ fun TR0App(
                     modifier = Modifier
                         .padding(innerPadding)
                 )
-            }
-
-            if (uiState.finishedGame) {
-
             }
         }
     }

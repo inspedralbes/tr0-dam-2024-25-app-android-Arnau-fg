@@ -1,20 +1,49 @@
 package com.example.tr0.data
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 data class GameUiState (
-    val questions: List<Pregunta> = listOf(),
+    var questions: List<Pregunta> = listOf(),
     val mutableAnswers: MutableList<Int> = mutableListOf(),
-    val token: String = "",
-    val finishedGame: Boolean = false
+    var token: String = "",
+    val allJsonInfo: StartGameJSON = StartGameJSON("",  listOf<Pregunta>()),
+    val finishedGame: Boolean = false,
+    var preguntaActual: Pregunta = Pregunta(0,"cacadevaca", listOf())
 )
 
+@Serializable
+data class StartGameJSON (
+
+    @SerialName (value = "token")
+    val token: String,
+
+    @SerialName (value = "formattedGameQuestions")
+    val formattedGameQuestions: List<Pregunta>
+)
+
+@Serializable
 data class Pregunta(
+
+    @SerialName (value = "id")
     val id: Int,
-    val titulo: String,
-    val respuestas: List<Respuesta>  // Lista de respuestas
+
+    @SerialName (value = "pregunta")
+    val pregunta: String,
+
+    @SerialName (value = "respostes")
+    val respostes: List<Resposta>
 )
 
-data class Respuesta(
+@Serializable
+data class Resposta(
+
+    @SerialName (value = "id")
     val id: Int,
-    val imagen: String,  // Ruta o URL de la imagen
-    val texto: String
+
+    @SerialName (value = "resposta")
+    val resposta: String,
+
+    @SerialName (value = "imatge")
+    val imatge: String
 )

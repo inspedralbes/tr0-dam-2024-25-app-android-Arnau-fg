@@ -33,7 +33,6 @@ fun StartGameScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-//            .background(Color(0xff5496ff))
             .background(
                 brush = Brush.linearGradient(
                     colors = listOf(Color(0xff5496ff), Color(0xff073c91))
