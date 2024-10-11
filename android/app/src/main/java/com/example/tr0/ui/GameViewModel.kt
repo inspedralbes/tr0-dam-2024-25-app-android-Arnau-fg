@@ -8,6 +8,9 @@ import com.example.tr0.GameScreen
 import com.example.tr0.communication.QuestionsApi
 import com.example.tr0.data.GameUiState
 import com.example.tr0.data.Pregunta
+import com.example.tr0.data.ReturnAnswers
+import com.example.tr0.data.Score
+import com.example.tr0.data.SendAnswers
 import com.example.tr0.data.StartGameJSON
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,11 +39,30 @@ class GameViewModel: ViewModel() {
             var nextQuestion: Pregunta = currentState.questions.get(0)
 
             if (currentState.mutableAnswers.size == 10) {
-                navController.navigate(GameScreen.Summary.name)
-                finished = true
-                println(currentState.mutableAnswers)
+
+                viewModelScope.launch {
+                    try {
+                        val endGameStats = QuestionsApi.retrofitService.postAnswers(SendAnswers(currentState.token,currentState.mutableAnswers))
+
+                        _uiState.update { thisValue ->
+                            thisValue.copy(
+                                score = endGameStats,
+                            )
+                        }
+
+                        println(endGameStats)
+                        navController.navigate(GameScreen.Summary.name)
+                        finished = true
+                    } catch (e: IOException) {
+                        println(e)
+                    }
+                }
             } else {
-                val length = currentState.mutableAnswers.size
+                var length = currentState.mutableAnswers.size
+
+                if(length>10) {
+                    length = 0
+                }
 
                 nextQuestion = currentState.questions.get(length)
 
@@ -48,40 +70,36 @@ class GameViewModel: ViewModel() {
             currentState.copy(
                 mutableAnswers = updatedAnswers,
                 finishedGame = finished,
-                preguntaActual = nextQuestion
+                preguntaActual = nextQuestion,
             )
         }
     }
 
-    private fun setQuestions(questions: List<Pregunta>) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                questions = questions
+    fun addSecondToTimer() {
+        _uiState.update { thisValue ->
+            val newTime = thisValue.timer + 1
+
+            println(newTime)
+
+            thisValue.copy(
+                timer = newTime,
             )
         }
     }
 
-    fun setToken(token: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                token = token
-            )
-        }
-    }
+
 
     fun resetGame() {
-        println("resetting")
         _uiState.update { currentState ->
             currentState.copy(
                 questions = listOf(),
                 finishedGame = false,
-                mutableAnswers = mutableListOf()
+                mutableAnswers = mutableListOf(),
+                timer = 0,
+                score = ReturnAnswers(false,Score(0,0)),
+
             )
         }
-
-        val token = uiState.value.token
-
-        // Call for questions to back
     }
 
     fun getGameQuestions(navController: NavHostController) {
@@ -89,14 +107,8 @@ class GameViewModel: ViewModel() {
         viewModelScope.launch {
             try {
 
-                println("entrant")
-
-                val listResult = QuestionsApi.retrofitService.getPreguntes(_uiState.value.token)
-
-                println("fetch")
-
-
-
+//                val listResult = QuestionsApi.retrofitService.getPreguntes(_uiState.value.token)
+                val listResult = QuestionsApi.retrofitService.getPreguntes()
 
                 _uiState.update {currentState ->
                     currentState.copy(
@@ -106,23 +118,13 @@ class GameViewModel: ViewModel() {
                     )
                 }
 
-                println(uiState.value.questions)
-                println(_uiState.value.questions)
-
-
-                println("guardat")
 
                 navController.navigate(GameScreen.Game.name)
 
-                println("al joc")
 
             } catch (e: IOException) {
                 println(e)
             }
         }
-    }
-
-    private fun postGameAnswers() {
-//        Lógica aquí
     }
 }

@@ -55,18 +55,27 @@ fun TR0App(
                     onSaveAnswer = {
                         viewModel.addAnswer(it, navController)
                     },
-                    pregunta = uiState.token,
+                    onSecondPassed = { viewModel.addSecondToTimer() },
                     modifier = Modifier
                         .padding(innerPadding)
                 )
             }
             composable(route = GameScreen.Summary.name) {
                 SummaryScreen(
+                    gameViewModel = viewModel,
                     answers = uiState.mutableAnswers,
+                    onRestartClicked = { restartGame(navController,viewModel) },
                     modifier = Modifier
                         .padding(innerPadding)
                 )
             }
         }
     }
+}
+
+private fun restartGame(navController: NavHostController,viewModel: GameViewModel) {
+
+    viewModel.resetGame()
+
+    navController.popBackStack(GameScreen.Start.name, inclusive = false)
 }

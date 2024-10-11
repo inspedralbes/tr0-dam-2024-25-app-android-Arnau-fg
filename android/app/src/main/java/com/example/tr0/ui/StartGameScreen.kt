@@ -61,7 +61,6 @@ fun StartGameScreen(
                     fontSize = 24.sp,
                 )
             }
-
         }
     }
 

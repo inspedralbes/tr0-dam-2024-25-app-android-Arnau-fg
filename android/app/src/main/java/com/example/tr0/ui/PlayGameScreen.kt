@@ -21,12 +21,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tr0.ui.theme.TR0Theme
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.example.tr0.data.Resposta
 
 
 @Composable
@@ -34,7 +39,7 @@ fun PlayGameScreen(
     gameViewModel: GameViewModel = viewModel(),
     onSaveAnswer: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
-    pregunta: String
+    onSecondPassed: () -> Unit = {},
 ) {
     val gameUiState by gameViewModel.uiState.collectAsState()
 
@@ -70,7 +75,7 @@ fun PlayGameScreen(
                     fontSize = 20.sp
                     )
             }
-            Spacer(modifier = modifier)
+            Timer(onSecondPassed,gameViewModel = gameViewModel)
             Row (
                 modifier = modifier
                     .fillMaxWidth(),
@@ -87,7 +92,8 @@ fun PlayGameScreen(
                         contentColor = Color.White
                     )
                 ) {
-                    Text(text = gameUiState.preguntaActual.respostes.get(0).resposta)
+                    GamePhotoCard(resposta = gameUiState.preguntaActual.respostes.get(0))
+//                    Text(text = gameUiState.preguntaActual.respostes.get(0).resposta)
 //                    Text(text = "hola")
                 }
                 Button(
@@ -98,7 +104,8 @@ fun PlayGameScreen(
                         contentColor = Color.White
                     )
                 ) {
-                    Text(text = gameUiState.preguntaActual.respostes.get(1).resposta)
+                    GamePhotoCard(resposta = gameUiState.preguntaActual.respostes.get(1))
+//                    Text(text = gameUiState.preguntaActual.respostes.get(1).resposta)
 //                    Text(text = "hola")
                 }
             }
@@ -116,7 +123,8 @@ fun PlayGameScreen(
                         contentColor = Color.White
                     )
                 ) {
-                    Text(text = gameUiState.preguntaActual.respostes.get(2).resposta)
+                    GamePhotoCard(resposta = gameUiState.preguntaActual.respostes.get(2))
+//                    Text(text = gameUiState.preguntaActual.respostes.get(2).resposta)
 //                    Text(text = "hola")
                 }
                 Button(
@@ -127,7 +135,8 @@ fun PlayGameScreen(
                         contentColor = Color.White
                     )
                 ) {
-                    Text(text = gameUiState.preguntaActual.respostes.get(3).resposta)
+                    GamePhotoCard(resposta = gameUiState.preguntaActual.respostes.get(3))
+//                    Text(text = gameUiState.preguntaActual.respostes.get(3).resposta)
 //                    Text(text = "hola")
                 }
             }
@@ -135,10 +144,24 @@ fun PlayGameScreen(
     }
 }
 
+@Composable
+fun GamePhotoCard(resposta: Resposta, modifier: Modifier = Modifier) {
+    AsyncImage(
+        model = ImageRequest.Builder(context = LocalContext.current)
+            .data(resposta.imatge)
+//            .data("https://android.com/sample_image.jpg")
+            .build(),
+        contentDescription = resposta.resposta,
+        contentScale = ContentScale.Fit,
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+
 @Preview
 @Composable
 fun PlayGamePreview () {
     TR0Theme {
-        PlayGameScreen( pregunta = "Aquesta és la pregunta que has d'encertar, bona sort")
+        PlayGameScreen()
     }
 }

@@ -9,7 +9,9 @@ data class GameUiState (
     var token: String = "",
     val allJsonInfo: StartGameJSON = StartGameJSON("",  listOf<Pregunta>()),
     val finishedGame: Boolean = false,
-    var preguntaActual: Pregunta = Pregunta(0,"cacadevaca", listOf())
+    var preguntaActual: Pregunta = Pregunta(0,"", listOf()),
+    var score: ReturnAnswers = ReturnAnswers(false,Score(0,0)),
+    var timer: Int = 0,
 )
 
 @Serializable
@@ -46,4 +48,28 @@ data class Resposta(
 
     @SerialName (value = "imatge")
     val imatge: String
+)
+
+data class SendAnswers(
+    val token: String,
+    val answers: MutableList<Int>
+)
+
+@Serializable
+data class ReturnAnswers(
+    @SerialName (value = "valid")
+    val valid: Boolean,
+
+    @SerialName (value = "playerScore")
+    val playerScore: Score,
+)
+
+@Serializable
+data class Score(
+
+    @SerialName (value = "encertades")
+    val encertades: Int,
+
+    @SerialName (value = "totals")
+    val totals: Int
 )
