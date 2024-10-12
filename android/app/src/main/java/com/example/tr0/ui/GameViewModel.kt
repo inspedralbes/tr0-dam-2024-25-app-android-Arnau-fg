@@ -50,7 +50,6 @@ class GameViewModel: ViewModel() {
                             )
                         }
 
-                        println(endGameStats)
                         navController.navigate(GameScreen.Summary.name)
                         finished = true
                     } catch (e: IOException) {
@@ -78,9 +77,6 @@ class GameViewModel: ViewModel() {
     fun addSecondToTimer() {
         _uiState.update { thisValue ->
             val newTime = thisValue.timer + 1
-
-            println(newTime)
-
             thisValue.copy(
                 timer = newTime,
             )
